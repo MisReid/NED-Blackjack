@@ -3,6 +3,8 @@ import cv2
 
 class Camera_Tools:
     
+    
+    
     def TakePhoto():
         # Open a connection to the webcam (0 is the default camera)
         video_capture = cv2.VideoCapture(0)
@@ -23,5 +25,6 @@ class Camera_Tools:
             cv2.imwrite('captured_image.jpg', frame)
         else:
             print("Failed to capture image")
-            
+
+#Ran when script is run independently. The function should be run in another script            
 Camera_Tools.TakePhoto()
