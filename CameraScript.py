@@ -6,7 +6,7 @@ class Camera_Tools:
        
     def TakePhoto():
         # Open webcam(default camera = 0)
-        video_capture = cv2.VideoCapture(0)
+        video_capture = cv2.VideoCapture(6)
 
         if not video_capture.isOpened():
             raise Exception("Could not open video device")
