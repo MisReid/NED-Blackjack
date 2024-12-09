@@ -4,8 +4,10 @@ import cv2
 class Camera_Tools:
     
     def TakePhoto():
-        # Open a connection to the webcam (0 is the default camera)
-        video_capture = cv2.VideoCapture(2)
+        # Open a connection to the webcam (0 is the default camera (webcam))
+        # (1 is the default for windows?)
+        # (2 is the default for the ubuntu laptop)
+        video_capture = cv2.VideoCapture(1)
 
         # Check if the webcam is opened correctly
         if not video_capture.isOpened():
