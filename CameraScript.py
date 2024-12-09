@@ -5,7 +5,7 @@ class Camera_Tools:
     
     def TakePhoto():
         # Open a connection to the webcam (0 is the default camera)
-        video_capture = cv2.VideoCapture(0)
+        video_capture = cv2.VideoCapture(2)
 
         # Check if the webcam is opened correctly
         if not video_capture.isOpened():
