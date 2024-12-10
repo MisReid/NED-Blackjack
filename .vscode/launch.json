@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "Python Debugger: main.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "main.py",
+            "args": ["-p", "Card_Database/7Diamond.jpg"]
+        }
+    ]
+}

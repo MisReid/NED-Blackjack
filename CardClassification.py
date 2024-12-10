@@ -10,4 +10,5 @@ class ClassificatonTools:
                          }    
     lookup_table = df(points_dictionary)
 
-print(ClassificatonTools.lookup_table)
+if __name__=="__main__":
+    print(ClassificatonTools.lookup_table)

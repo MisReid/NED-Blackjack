@@ -14,12 +14,10 @@ loop_through_files = True
 
 class FilteringTools:
     
-    def color2bin(img = ''):
-        img_name = img.split(".")[0]
-        input_img = path.join(Card_Database,img)
+    @staticmethod
+    def color2bin(img):
         ##Mask
-        #read image
-        img_grey = cv2.imread(input_img, cv2.IMREAD_GRAYSCALE)
+        img_grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img_bw = cv2.GaussianBlur(img_grey,(5,5),0)
 
         # define a threshold, 128 is the middle of black and white in grey scale
@@ -28,8 +26,9 @@ class FilteringTools:
         # threshold the image
         img_binary = cv2.threshold(img_bw, thresh, 255, cv2.THRESH_BINARY)[1]
 
-        return img_binary,img_name
+        return img_binary
     
+    @staticmethod
     def ImgTrim(img_binary):
         
         debug = False
@@ -61,35 +60,43 @@ class FilteringTools:
 
         return fitted_image , cropped_image
 
-if loop_through_files is True:
-    counter = 1
-    dataset = os.listdir(Card_Database)
+    @staticmethod
+    def grabCorner(img):
+        imgOut = img[0 : 55 , 0: 40]
+        return imgOut
 
-    for image in dataset:
+if __name__=="__main__":
+    if loop_through_files is True:
+        counter = 1
+        dataset = os.listdir(Card_Database)
 
-        if image == "Card_Outputs":
-            pass
-        else:
-            #Format image
-            color_image = image
-            img_binary,img_name = FilteringTools.color2bin(color_image)
-            cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)  
+        for image in dataset:
 
-            #save image
-            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary) 
-            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
-            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
-            print(f"Image outputs Written : {counter} of {len(dataset)}")
-            counter += 1
+            if image == "Card_Outputs":
+                pass
+            else:
+                #Format image
+                color_image = image
+                img_binary,img_name = FilteringTools.color2bin(color_image)
+                cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)  
 
-else:
+                #save image
+                cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary) 
+                cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
+                cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
+                print(f"Image outputs Written : {counter} of {len(dataset)}")
+                counter += 1
 
-    color_image = Card_Database
-    img_binary, img_name = FilteringTools.color2bin(color_image)
-    cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
-    
-    #save image
-    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary) 
-    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
-    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
-    print("Image outputs Written") 
+    else:
+
+        color_image = Card_Database
+        img_binary, img_name = FilteringTools.color2bin(color_image)
+        cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
+        corner_img = FilteringTools.grabCorner(cropped_img)
+        
+        #save image
+        cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary) 
+        cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
+        cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
+        cv2.imwrite(path.join(Card_Outputs,f'{img_name}_cor.png'),corner_img)
+        print("Image outputs Written") 
