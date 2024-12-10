@@ -4,6 +4,8 @@ import os
 from os import path
 import cv2
 import numpy as np
+from math import dist
+from math import acos
 
 #Paths
 Card_Database = r'./Card_Database'
@@ -32,13 +34,8 @@ class FilteringTools:
     
     def ImgTrim(img_binary):
         
-        debug = False
         contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         
-        if debug is True:
-            cv2.drawContours(img_binary, contours, -1, (0,255,0), 3)
-            plt.imshow('Contours', contours)
-            cv2.waitKey(0)
         # Finds the largest contour (card edge)
         largest = contours[0]
         for contour in contours:
@@ -61,6 +58,44 @@ class FilteringTools:
 
         return fitted_image , cropped_image
 
+    def ImgRotate(base_img):
+
+        contours, _ = cv2.findContours(base_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+        # Finds the largest contour (card edge)
+        largest = contours[0]
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > cv2.contourArea(largest):
+                largest = contour
+
+        highest_y = largest[0]
+        next_highest_y = [0,0]
+
+        for point in largest:
+            if point[1] > highest_y[1]:
+                next_highest_y = highest_y
+                highest_y = point
+
+        # Get the bounding box of the largest contour
+        x, y, w, h = cv2.boundingRect(largest)
+
+        (h_img, w_img) = base_img.shape[:2]
+        center = (w_img // 2 , h_img // 2)
+
+        #Define Rotation Matrix
+        p0 = [x,y]  # Top Left Corner
+        p1 = [w,h]  # Top Right Corner
+        p2 = [w,y]  # Top Right Corner projected to x axis 
+        angle = acos(dist(p2,p0),dist(p1,p0))   #angle between [p0 -> p2] and [p0 -> p1]
+        scale = 1.0
+
+        M = cv2.getRotationMatrix2D(center, angle, scale)
+
+        rotate_img = cv2.warpAffine(base_img, M, (w_img, h_img))
+
+        return rotate_img
+
 if loop_through_files is True:
     counter = 1
     dataset = os.listdir(Card_Database)
@@ -73,10 +108,12 @@ if loop_through_files is True:
             #Format image
             color_image = image
             img_binary,img_name = FilteringTools.color2bin(color_image)
-            cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)  
+            rotate_img = FilteringTools.ImgRotate(img_binary)
+            cropped_img, trimmed_img = FilteringTools.ImgTrim(rotate_img)  
 
             #save image
-            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary) 
+            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary)
+            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_rot.png'),rotate_img) 
             cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
             cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
             print(f"Image outputs Written : {counter} of {len(dataset)}")
@@ -86,10 +123,12 @@ else:
 
     color_image = Card_Database
     img_binary, img_name = FilteringTools.color2bin(color_image)
+    rotate_img = FilteringTools.ImgRotate(img_binary)    
     cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
     
     #save image
-    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary) 
+    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary)
+    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_rot.png'),rotate_img) 
     cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
     cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
     print("Image outputs Written") 
