@@ -32,8 +32,9 @@ class FilteringTools:
     
     def ImgTrim(img_binary):
         
-        contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        image, contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
+        cv2.imshow(image)
         # Finds the largest contour (card edge)
         largest = contours[0]
         for contour in contours:
