@@ -1,5 +1,5 @@
 #Card Filtering.py
-import pathlib
+from matplotlib import pyplot as plt
 import os
 from os import path
 import cv2
@@ -32,9 +32,13 @@ class FilteringTools:
     
     def ImgTrim(img_binary):
         
-        image, contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
-        cv2.imshow(image)
+        debug = False
+        contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        
+        if debug is True:
+            cv2.drawContours(img_binary, contours, -1, (0,255,0), 3)
+            plt.imshow('Contours', contours)
+            cv2.waitKey(0)
         # Finds the largest contour (card edge)
         largest = contours[0]
         for contour in contours:
@@ -43,7 +47,7 @@ class FilteringTools:
                 largest = contour
 
         # Get the bounding box of the largest contour
-        x, y, w, h = cv2.boundingRect(contours[0])
+        x, y, w, h = cv2.boundingRect(largest)
         x_buff = int(8.85/62.8 * w)
         y_buff = int(6.05/88.1 * h)
         
