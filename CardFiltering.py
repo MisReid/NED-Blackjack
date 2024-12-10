@@ -5,7 +5,8 @@ from os import path
 import cv2
 import numpy as np
 from math import dist
-from math import acos
+from math import atan
+from math import degrees as deg
 
 #Paths
 Card_Database = r'./Card_Database'
@@ -16,9 +17,13 @@ loop_through_files = True
 
 class FilteringTools:
     
-    def color2bin(img = ''):
+    def color2bin(img = '',file_loop = True):
         img_name = img.split(".")[0]
-        input_img = path.join(Card_Database,img)
+        if file_loop is True:
+            input_img = path.join(Card_Database,img)
+        else:
+            input_img = Card_Database
+
         ##Mask
         #read image
         img_grey = cv2.imread(input_img, cv2.IMREAD_GRAYSCALE)
@@ -69,31 +74,17 @@ class FilteringTools:
             if area > cv2.contourArea(largest):
                 largest = contour
 
-        highest_y = largest[0]
-        next_highest_y = [0,0]
-
-        for point in largest:
-            if point[1] > highest_y[1]:
-                next_highest_y = highest_y
-                highest_y = point
-
         # Get the bounding box of the largest contour
-        x, y, w, h = cv2.boundingRect(largest)
-
-        (h_img, w_img) = base_img.shape[:2]
-        center = (w_img // 2 , h_img // 2)
+        rect = cv2.minAreaRect(largest)
 
         #Define Rotation Matrix
-        p0 = [x,y]  # Top Left Corner
-        p1 = [w,h]  # Top Right Corner
-        p2 = [w,y]  # Top Right Corner projected to x axis 
-        angle = acos(dist(p2,p0),dist(p1,p0))   #angle between [p0 -> p2] and [p0 -> p1]
+        angle = rect[2]
+        center = rect[0]
         scale = 1.0
-
         M = cv2.getRotationMatrix2D(center, angle, scale)
 
-        rotate_img = cv2.warpAffine(base_img, M, (w_img, h_img))
-
+        rotate_img = cv2.warpAffine(base_img, M, base_img.shape[1::-1])
+        
         return rotate_img
 
 if loop_through_files is True:
@@ -104,31 +95,34 @@ if loop_through_files is True:
 
         if image == "Card_Outputs":
             pass
+
         else:
             #Format image
             color_image = image
-            img_binary,img_name = FilteringTools.color2bin(color_image)
-            rotate_img = FilteringTools.ImgRotate(img_binary)
-            cropped_img, trimmed_img = FilteringTools.ImgTrim(rotate_img)  
+            img_binary, img_name = FilteringTools.color2bin(color_image,loop_through_files)
+            cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
+            rotate_img = FilteringTools.ImgRotate(cropped_img)    
+            cropped_img1, trimmed_img1 = FilteringTools.ImgTrim(rotate_img)  
 
             #save image
             cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary)
             cv2.imwrite(path.join(Card_Outputs,f'{img_name}_rot.png'),rotate_img) 
-            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
-            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
-            print(f"Image outputs Written : {counter} of {len(dataset)}")
+            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img1) 
+            cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img1)
+            print(f"Image outputs Written : {counter} of {len(dataset)-1}")
             counter += 1
 
 else:
 
     color_image = Card_Database
-    img_binary, img_name = FilteringTools.color2bin(color_image)
-    rotate_img = FilteringTools.ImgRotate(img_binary)    
+    img_binary, img_name = FilteringTools.color2bin(color_image,loop_through_files)
     cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
+    rotate_img = FilteringTools.ImgRotate(cropped_img)    
+    cropped_img1, trimmed_img1 = FilteringTools.ImgTrim(rotate_img)
     
     #save image
     cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary)
     cv2.imwrite(path.join(Card_Outputs,f'{img_name}_rot.png'),rotate_img) 
-    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
-    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
+    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img1) 
+    cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img1)
     print("Image outputs Written") 
