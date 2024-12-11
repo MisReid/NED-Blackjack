@@ -14,9 +14,12 @@ loop_through_files = True
 
 class FilteringTools:
     
-    def color2bin(img = ''):
+    def color2bin(img = '',fileLoop = True):
         img_name = img.split(".")[0]
-        input_img = path.join(Card_Database,img)
+        if fileLoop is True:
+            input_img = path.join(Card_Database,img)
+        else:
+            input_img = img
         ##Mask
         #read image
         img_grey = cv2.imread(input_img, cv2.IMREAD_GRAYSCALE)
@@ -32,9 +35,8 @@ class FilteringTools:
     
     def ImgTrim(img_binary):
         
-        image, contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-        cv2.imshow(image)
         # Finds the largest contour (card edge)
         largest = contours[0]
         for contour in contours:
@@ -43,7 +45,7 @@ class FilteringTools:
                 largest = contour
 
         # Get the bounding box of the largest contour
-        x, y, w, h = cv2.boundingRect(contours[0])
+        x, y, w, h = cv2.boundingRect(largest)
         x_buff = int(8.85/62.8 * w)
         y_buff = int(6.05/88.1 * h)
         
@@ -81,7 +83,7 @@ if loop_through_files is True:
 else:
 
     color_image = Card_Database
-    img_binary, img_name = FilteringTools.color2bin(color_image)
+    img_binary, img_name = FilteringTools.color2bin(color_image,loop_through_files)
     cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
     
     #save image
