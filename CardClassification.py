@@ -36,4 +36,6 @@ class ClassificatonTools:
         
         return card_value
 
-print(ClassificatonTools.lookup_table)
+if __name__=="__main__":
+    print(ClassificatonTools.lookup_table)
+
