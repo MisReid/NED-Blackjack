@@ -61,9 +61,12 @@ class symbolCounter:
 
         # Display points on the original image
         for x, y in transitions:
-            cv2.circle(img, (x, y), radius=1, color=(0, 0, 255), thickness=-1)
+            cv2.circle(img, (x, y), radius=3, color=(0, 0, 255), thickness=-1)
         
-        return transitions, img
+        transitionTotal = len(transitions)
+
+
+        return transitions, transitionTotal, img
 
     def BoundingBox(image_path):
         img = cv2.imread(image_path)
@@ -115,7 +118,7 @@ class symbolCounter:
     ## OUT OF THE FUNCTIONS
 
     #Setting up the filepath
-    directory = "C:/Users/holds/SPRBlackjackRobot/CameraTest/Card_Database"
+    directory = "C:/Users/holds/SPRBlackjackRobot/NED-Blackjack/Card_Database/Card_Outputs"
     filename = "10Spade_trm.png"
     #filename = "5Diamond.jpg"
     image_path = directory + "/" + filename
@@ -128,7 +131,7 @@ class symbolCounter:
     imgContours = NestedContours(image_path)
         
     # Getting the locations of the symbols and the image of them to display
-    transitions, imgW2B = WhiteToBlackDetector(image_path)
+    transitions, transitionTotal, imgW2B = WhiteToBlackDetector(image_path)
     print("Transition Points are: {}".format(transitions))
 
     transitionTotal = len(transitions)
