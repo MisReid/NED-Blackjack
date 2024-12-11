@@ -6,6 +6,12 @@
             "request": "launch",
             "program": "main.py",
             "args": ["-p", "Card_Database/7Diamond.jpg"]
+        },
+        {
+            "name": "Python Debugger: CardFiltering.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "CardFiltering.py"
         }
     ]
 }
