@@ -119,14 +119,6 @@ if __name__=="__main__":
               print(f"Image outputs Written : {counter} of {len(dataset)-1}")
               counter += 1
 
-
-                #save image
-                cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary) 
-                cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img) 
-                cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img)
-                print(f"Image outputs Written : {counter} of {len(dataset)}")
-                counter += 1
-
     else:
       color_image = Card_Database
       img_binary, img_name = FilteringTools.color2bin(color_image,loop_through_files)
