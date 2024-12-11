@@ -54,16 +54,17 @@ class FilteringTools:
         w_new = w - x_buff
         h_new = h - y_buff
         
-        fitted_image = img_binary[y : y+h , x : x+w]
-        cropped_image = img_binary[y_new : y_new + h_new , x_new : x_new + w_new]
+        cropped_image = img_binary[y : y+h , x : x+w]
+        trimmed_image = img_binary[y_new : y_new + h_new , x_new : x_new + w_new]
 
-        return fitted_image , cropped_image
+        return cropped_image , trimmed_image
 
     @staticmethod
     def grabCorner(img):
         imgOut = img[0 : 55 , 0: 40]
         return imgOut
 
+    @staticmethod
     def ImgRotate(base_img):
 
         contours, _ = cv2.findContours(base_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -88,11 +89,6 @@ class FilteringTools:
         
         return rotate_img
 
-if loop_through_files is True:
-    counter = 1
-    dataset = os.listdir(Card_Database)
-
-
 if __name__=="__main__":
     if loop_through_files is True:
         counter = 1
@@ -105,17 +101,21 @@ if __name__=="__main__":
                 pass
             else:
               #Format image
-              color_image = image
-              img_binary, img_name = FilteringTools.color2bin(color_image,loop_through_files)
+              color_image = cv2.imread(f"Card_Database/{image}")
+              img_binary, img_name = FilteringTools.color2bin(color_image)
               cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
               rotate_img = FilteringTools.ImgRotate(cropped_img)    
-              cropped_img1, trimmed_img1 = FilteringTools.ImgTrim(rotate_img)  
+              cropped_img1, trimmed_img1 = FilteringTools.ImgTrim(rotate_img)
+              corner_norm = FilteringTools.grabCorner(cropped_img)
+              corner_rot = FilteringTools.grabCorner(cropped_img1)
 
               #save image
               cv2.imwrite(path.join(Card_Outputs,f'{img_name}_bin.png'),img_binary)
-              cv2.imwrite(path.join(Card_Outputs,f'{img_name}_rot.png'),rotate_img) 
+              cv2.imwrite(path.join(Card_Outputs,f'{img_name}_rot.png'),rotate_img)
               cv2.imwrite(path.join(Card_Outputs,f'{img_name}_crp.png'),cropped_img1) 
               cv2.imwrite(path.join(Card_Outputs,f'{img_name}_trm.png'),trimmed_img1)
+              cv2.imwrite(path.join(Card_Outputs,f'{img_name}_cor.png'),corner_norm)
+              cv2.imwrite(path.join(Card_Outputs,f'{img_name}_rot_cor.png'),corner_rot)
               print(f"Image outputs Written : {counter} of {len(dataset)-1}")
               counter += 1
 

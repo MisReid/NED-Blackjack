@@ -10,8 +10,10 @@ def main(img):
     # Filter image
     filterer = CardFiltering.FilteringTools()
     img_binary = filterer.color2bin(img)
-    cropped_img, trimmed_img = filterer.ImgTrim(img_binary)
-    corner_img = filterer.grabCorner(cropped_img)
+    cropped_img_0, trimmed_img = filterer.ImgTrim(img_binary)
+    rotated_img = filterer.ImgRotate(cropped_img_0)
+    cropped_img_rot, trimmed_img = filterer.ImgTrim(rotated_img)
+    corner_img = filterer.grabCorner(cropped_img_rot)
 
     # CLassify image
     # Currently only have OCR
