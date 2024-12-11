@@ -1,5 +1,6 @@
 import cv2 # type: ignore
 import numpy as np # type: ignore
+import CardClassification as classify
 
 ## GOALs 
 # Make something to find the right x values to count that column
@@ -124,7 +125,7 @@ class symbolCounter:
     directory = "C:/Users/holds/SPRBlackjackRobot/NED-Blackjack/Card_Database/Card_Outputs"
     #filename = "10Spade_trm.png"
     #filename = "5Diamond.jpg"
-    filename = "9Club_trm.png"
+    filename = "AceSpade_trm.png"
     image_path = directory + "/" + filename
 
     # Getting the image with bounding boxes
@@ -137,9 +138,9 @@ class symbolCounter:
     # Getting the locations of the symbols and the image of them to display
     transitions, transitionTotal, imgW2B = WhiteToBlackDetector(image_path)
     print("Transition Points are: {}".format(transitions))
-
-    transitionTotal = len(transitions)
     print("There are {} Transition Points.".format(transitionTotal))
+
+    print("Card Score: {}".format(classify.ClassificatonTools.card_scoring(transitionTotal)))
 
     # Display the image with contours
     cv2.imshow('Changes in Color Points', imgW2B)
