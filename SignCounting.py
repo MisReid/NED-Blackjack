@@ -21,9 +21,9 @@ class symbolCounter:
         
         # defining dimensions
         row = range(height)
-        x1 = 0.13 * width; x1 = int(x1) #Setting up our 3 columns at percentage distances across the width of the card
-        x2 = 0.405 * width; x2 = int(x2)
-        x3 = 0.69 * width; x3 = int(x3)
+        x1 = 0.14 * width; x1 = int(x1) #Setting up our 3 columns at percentage distances across the width of the card
+        x2 = 0.41 * width; x2 = int(x2)
+        x3 = 0.695 * width; x3 = int(x3)
         column = [x1, x2, x3]  # Specifying the x-coordinates to check  
 
         #Setting the Flag
@@ -32,18 +32,21 @@ class symbolCounter:
         for xIndex in column:
             #print(xIndex)
             print("New Column at: ({})".format(xIndex))
-            
+            prevPoint = 0
             #going from y = 0 to y = height
             for yIndex in row:
                 # Check if current pixel is white and next pixel is black
                 # if y = 0 (we're on black) and we were just on white (Flag == 1): save point to transitions and change flag to 0 (on black)
                 # also it indexes y, x because thats just how cv works
                 if (img[yIndex,xIndex] == 0).any() and Flag == 1:
-                    #to filter out the incorrect points at the top and bottom
-                    if yIndex < 0.97*height and yIndex > 0.03*height:
-                        transitions.append((xIndex, yIndex))
-                        print("Point Appended: ({}, {})".format(xIndex, yIndex))
-                        Flag = 0
+                    #to filter out the incorrect points at the top and bottom (lower 10% and top 2%)
+                    if yIndex < 0.9*height and yIndex > 0.02*height:
+                        #Giving it a minimum distance it needs to travel to log another point
+                        if (yIndex - prevPoint > 0.21 * height) or prevPoint == 0:
+                            prevPoint = yIndex
+                            transitions.append((xIndex, yIndex))
+                            print("Point Appended: ({}, {})".format(xIndex, yIndex))
+                            Flag = 0
                     else:
                         print("Transtition Point out of Range: ({}, {})".format(xIndex, yIndex))
                 # if (img[yIndex,xIndex] == 0).any() and Flag == 1:    #old version save
@@ -119,8 +122,9 @@ class symbolCounter:
 
     #Setting up the filepath
     directory = "C:/Users/holds/SPRBlackjackRobot/NED-Blackjack/Card_Database/Card_Outputs"
-    filename = "10Spade_trm.png"
+    #filename = "10Spade_trm.png"
     #filename = "5Diamond.jpg"
+    filename = "9Club_trm.png"
     image_path = directory + "/" + filename
 
     # Getting the image with bounding boxes
