@@ -97,12 +97,13 @@ if __name__=="__main__":
 
         for image in dataset:
 
+            img_name = image.split(".")[0]
             if image == "Card_Outputs":
                 pass
             else:
               #Format image
               color_image = cv2.imread(f"Card_Database/{image}")
-              img_binary, img_name = FilteringTools.color2bin(color_image)
+              img_binary = FilteringTools.color2bin(color_image)
               cropped_img, trimmed_img = FilteringTools.ImgTrim(img_binary)
               rotate_img = FilteringTools.ImgRotate(cropped_img)    
               cropped_img1, trimmed_img1 = FilteringTools.ImgTrim(rotate_img)
